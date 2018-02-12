@@ -6,7 +6,9 @@ def test():
     md = get_unet()
     md.load_weights('unet.hdf5')
 
-    h, hy = gd(start = 1, end = 10, main_dir='data\\')
+    main_dir = 'test\\'
+
+    h, hy = gd(start = 0, end = 1, main_dir='test\\')
 
     print("predicting")
 
@@ -15,8 +17,9 @@ def test():
     i = 0
     for p in hp:
         i += 1
-        plt.imshow(hp.reshape((224, 224)))
-        plt.savefig(main_dir + 'out' + str(i) + '.jpg')
+        plt.imshow(p.reshape((224, 224)))
+        plt.savefig(main_dir + 'out\\' + str(i) + '.jpg')
+        print(main_dir + 'out\\' + str(i) + '.jpg')
 
     print("Done")
 
