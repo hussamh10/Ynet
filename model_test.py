@@ -1,26 +1,29 @@
 from unet import get_unet
 from hussam_data import getData as gd
 from matplotlib import pyplot as plt
+import keras
 
-def test():
+
+def test(start):
     md = get_unet()
-    md.load_weights('unet.hdf5')
+    md.load_weights('ynet.hdf5')
 
-    main_dir = 'test\\'
+    h, hy = gd(start = start, end = start + 10)
 
-    h, hy = gd(start = 0, end = 1, main_dir='test\\')
-
+    del hy
+    
     print("predicting")
 
     hp = md.predict(h)
 
-    i = 0
+    i = start+1
     for p in hp:
-        i += 1
         plt.imshow(p.reshape((224, 224)))
-        plt.savefig(main_dir + 'out\\' + str(i) + '.jpg')
-        print(main_dir + 'out\\' + str(i) + '.jpg')
+        plt.savefig('' + 'out\\' + str(i) + '.png')
+        print(''  + 'out\\' + str(i) + '.png')
+        i += 1
 
     print("Done")
 
-test()
+for i in range(310, 400, 10):
+    test(i)
