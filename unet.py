@@ -1,5 +1,5 @@
+#os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 import os 
-#os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 import numpy as np
 from keras.models import *
 from keras.layers import Input, merge, Conv2D, MaxPooling2D, UpSampling2D, Dropout, Cropping2D
@@ -13,7 +13,7 @@ from audio import getAudio
 
 
 def load_data():
-    imgs_train, labels_train = getData(400)
+    imgs_train, labels_train = getData(400, start = 1)
     imgs_test, labels_test = getData(200, start = 190)
 
     return imgs_train, labels_train, imgs_test
@@ -63,11 +63,6 @@ def get_unet(img_rows=224, img_cols=224):
     conv6 = Conv2D(512, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(merge6)
     conv6 = Conv2D(512, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(conv6)
 
-    #up6 = conv2d(512, 2, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(upsampling2d(size = (2,2))(drop5))
-    #merge6 = merge([drop4,up6], mode = 'concat', concat_axis = 3)
-    #conv6 = conv2d(512, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(merge6)
-    #conv6 = conv2d(512, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(conv6)
-
     up7 = Conv2D(256, 2, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(UpSampling2D(size = (2,2))(conv6))
     merge7 = merge([conv3,up7], mode = 'concat', concat_axis = 3)
     conv7 = Conv2D(256, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(merge7)
@@ -105,22 +100,9 @@ def train():
     model = get_unet()
     print("got unet")
 
-    model_checkpoint = ModelCheckpoint('unet.hdf5', monitor='loss',verbose=1, save_best_only=True)
+    model_checkpoint = ModelCheckpoint('ynet.hdf5', monitor='loss',verbose=1, save_best_only=True)
     print('Fitting model...')
-    model.fit(imgs_train, imgs_mask_train, batch_size=4, nb_epoch=1000, verbose=1,validation_split=0.2, shuffle=True, callbacks=[model_checkpoint, tbCallBack])
-
-    print('predict test data')
-    imgs_mask_test = model.predict(imgs_test, batch_size=1, verbose=1)
-    np.save('../results/imgs_mask_test.npy', imgs_mask_test)
-
-def save_img():
-
-    print("array to image")
-    imgs = np.load('imgs_mask_test.npy')
-    for i in range(imgs.shape[0]):
-            img = imgs[i]
-            img = array_to_img(img)
-            img.save("../results/%d.jpg"%(i))
+    model.fit(imgs_train, imgs_mask_train, batch_size=3, nb_epoch=1000, verbose=1,validation_split=0.2, shuffle=True, callbacks=[model_checkpoint, tbCallBack])
 
 if __name__ == '__main__':
     train()
