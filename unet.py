@@ -6,17 +6,10 @@ from keras.layers import Input, merge, Conv2D, MaxPooling2D, UpSampling2D, Dropo
 from keras.optimizers import *
 from keras.callbacks import ModelCheckpoint, LearningRateScheduler, TensorBoard
 from keras import backend as keras
-from data import *
 
-from hussam_data import getData
+from generator import generate
 from audio import getAudio
 
-
-def load_data():
-    imgs_train, labels_train = getData(400, start = 1)
-    imgs_test, labels_test = getData(200, start = 190)
-
-    return imgs_train, labels_train, imgs_test
 
 def get_unet(img_rows=224, img_cols=224):
 
@@ -53,8 +46,6 @@ def get_unet(img_rows=224, img_cols=224):
     conv5 = Conv2D(1024, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(pool4)
     conv5 = Conv2D(1024, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(conv5)
     drop5 = Dropout(0.5)(conv5)
-
-    #changes made after here
 
     mergeAudio = (merge([drop5, audio], mode = 'concat'))
 
@@ -94,15 +85,13 @@ def train():
 
     tbCallBack = TensorBoard(log_dir='./Graph', histogram_freq=0, write_graph=True, write_images=True)
 
-    print("loading data")
-    imgs_train, imgs_mask_train, imgs_test = load_data()
-    print("loading data done")
     model = get_unet()
     print("got unet")
 
     model_checkpoint = ModelCheckpoint('ynet.hdf5', monitor='loss',verbose=1, save_best_only=True)
     print('Fitting model...')
-    model.fit(imgs_train, imgs_mask_train, batch_size=3, nb_epoch=1000, verbose=1,validation_split=0.2, shuffle=True, callbacks=[model_checkpoint, tbCallBack])
+
+    model.fit_generator(generate(100, 2), steps_per_epoch=20, epochs=2000, verbose=1, callbacks=[model_checkpoint, tbCallBack])
 
 if __name__ == '__main__':
     train()

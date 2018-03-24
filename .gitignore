@@ -1,4 +1,7 @@
+/*/
 /test
 /data
 *.hdf5
 *.swp
+/out
+/ynet_out
