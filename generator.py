@@ -1,4 +1,5 @@
 import numpy as np
+import cv2
 from cv2 import imread
 import cv2
 import os
@@ -6,8 +7,8 @@ import os
 
 def getImage(i, source, main_dir, ext, prefix):
     name = prefix + str(i) + ext
-
-    print(main_dir + source + '\\' + name)
+    path = os.path.join(main_dir, source , name)
+    img = imread(path, 0)
 
     img = imread(main_dir + source + '/' + name, 0)
     img = img.reshape((img.shape[0], img.shape[1], 1))
@@ -15,6 +16,7 @@ def getImage(i, source, main_dir, ext, prefix):
     img = img.reshape(224, 224, 1)
     img = img.astype('float32')
     img /= 255
+
     return img
 
 
