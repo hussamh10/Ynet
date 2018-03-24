@@ -16,6 +16,9 @@ def getError(a, b):
 
     return(sess.run(bce(ta, tb)))
 
+def getRandom(size):
+    return np.random.rand(size)
+
 def getImage(i, source, main_dir, ext):
     name = str(i) + ext
 
@@ -65,7 +68,14 @@ def testImages():
     i2 = getImage(1, 'same', 'test', '.jpg')
     
     print('Error for black image and regular image 1.jpg ', str(getError(i1, i2)))
- 
+
+    #random images
+
+    i1 = getRandom((224, 224))
+    i2 = np.copy(i1)
+    
+    print('Error for 2 same random arrays', str(getError(i1, i2)))
+
     #different images
     i1 = getImage(1, 'same', 'test', '.jpg')
     i2 = getImage(2, 'same', 'test', '.jpg')
