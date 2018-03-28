@@ -1,6 +1,5 @@
 from cv2 import imread
-import numpy as np
-
+import os
 import numpy as np
 import cv2
 
@@ -16,7 +15,9 @@ def getImage(i, source, main_dir, ext):
     img /= 255
     return img
 
-def getData(end, start=0, main_dir='../data/data/7'):
+def getData(end, start=0, main_dir='../data/data', video=1):
+
+    main_dir = os.path.join(main_dir, str(video))
 
     imgs = []
     labels = []

@@ -75,7 +75,7 @@ def get_unet(img_rows=224, img_cols=224):
 
     model = Model(input = [inputs, audio_in], output = conv10)
 
-    model.compile(optimizer = Adam(lr = 1e-4), loss = 'binary_crossentropy', metrics = ['accuracy'])
+    model.compile(optimizer = Adam(lr = 1e-4), loss = 'MSE', metrics = ['accuracy'])
 
     return model
 
@@ -88,10 +88,10 @@ def train():
     model = get_unet()
     print("got unet")
 
-    model_checkpoint = ModelCheckpoint('ynet.hdf5', monitor='loss',verbose=1, save_best_only=True)
+    model_checkpoint = ModelCheckpoint('ynet.hdf5', monitor='loss', save_best_only=False, verbose=1, mode='auto', period=10)
     print('Fitting model...')
 
-    model.fit_generator(generate(100, 2), steps_per_epoch=20, epochs=2000, verbose=1, callbacks=[model_checkpoint, tbCallBack])
+    model.fit_generator(generate(100, 12), steps_per_epoch=20, epochs=2000, verbose=1, callbacks=[model_checkpoint, tbCallBack])
 
 if __name__ == '__main__':
     train()
